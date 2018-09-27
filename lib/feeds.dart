@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ngxda/feed/apps.dart';
 import 'package:ngxda/feed/best.dart';
 import 'package:ngxda/feed/latest.dart';
 
@@ -58,7 +59,7 @@ class FeedsState extends State<Feeds> with SingleTickerProviderStateMixin {
               new LatestFeeds(),
               new BestFeeds(),
               Icon(Icons.directions_bike),
-              Icon(Icons.directions_bike),
+              new Apps(),
             ],
           ),
         ));

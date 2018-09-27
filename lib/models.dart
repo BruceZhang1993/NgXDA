@@ -29,3 +29,18 @@ class PostDetail {
     return "PostDetail<title: " + this.title + ">";
   }
 }
+
+class App {
+  final String name;
+  final String link;
+  final String image;
+  final String id;
+  final String detail;
+
+  App(this.name, this.link, this.image, this.id, this.detail);
+
+  @override
+  String toString() {
+    return "App<name: " + this.name + ">";
+  }
+}

@@ -29,6 +29,12 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  flutter_launcher_icons: ^0.6.1
+
+
+flutter_icons:
+  android: true
+  image_path: "asset/icons/xda.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

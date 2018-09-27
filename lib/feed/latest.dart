@@ -11,14 +11,18 @@ class LatestFeeds extends StatefulWidget {
   State<StatefulWidget> createState() => new LatestState();
 }
 
-class LatestState extends State<LatestFeeds> {
+class LatestState extends State<LatestFeeds> with AutomaticKeepAliveClientMixin {
   int currentPage = 1;
   List<Post> posts = [];
   http.Client client;
   ScrollController scroll;
   bool reachedBottom = false;
+  var opacity_value = 0.0;
 
   void fetchPage() {
+    setState(() {
+      this.opacity_value = 1.0;
+    });
     String uri = 'https://www.xda-developers.com/page/$currentPage/';
     if (currentPage == 1) {
       uri = 'https://www.xda-developers.com';
@@ -40,6 +44,7 @@ class LatestState extends State<LatestFeeds> {
         new_posts.add(new_post);
       }
       setState(() {
+        this.opacity_value = 0.0;
         this.posts.addAll(Iterable.castFrom(new_posts));
       });
     });
@@ -91,9 +96,19 @@ class LatestState extends State<LatestFeeds> {
 
   @override
   Widget build(BuildContext context) {
-    return new ListView.builder(
+    return ListView.builder(
         controller: this.scroll,
         itemBuilder: (context, index) {
+          if (index == posts.length) {
+            return new Opacity(opacity: this.opacity_value, child: new Container(
+                padding: EdgeInsets.symmetric(vertical: 6.0),
+                child: new Image(
+                  image: new AssetImage('asset/static/loading.gif'),
+                  width: 35.0,
+                  height: 35.0,
+                )
+            ));
+          }
           return new GestureDetector(
             onTap: () {
               _launchUrl(posts[index]);
@@ -140,6 +155,9 @@ class LatestState extends State<LatestFeeds> {
             ),
           );
         },
-        itemCount: posts.length);
+        itemCount: posts.length+1);
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

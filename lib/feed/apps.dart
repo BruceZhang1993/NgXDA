@@ -6,17 +6,18 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:ngxda/models.dart';
 
-class BestFeeds extends StatefulWidget {
+
+class Apps extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => new BestState();
+  State<StatefulWidget> createState() => new AppsState();
 }
 
-class BestState extends State<BestFeeds> with AutomaticKeepAliveClientMixin {
-  List<Post> posts = [];
+class AppsState extends State<Apps> with AutomaticKeepAliveClientMixin {
+  List<App> apps = [];
   http.Client client;
   var opacity_value = 0.0;
 
-  void fetchBest() {
+  void fetchApps() {
     setState(() {
       this.opacity_value = 1.0;
     });
@@ -24,20 +25,20 @@ class BestState extends State<BestFeeds> with AutomaticKeepAliveClientMixin {
     print('Fetching $uri');
     client.get(uri).then((response) {
       var document = parse(response.body);
-      var posts = document.getElementsByClassName('tb_widget_posts_big')[0].getElementsByClassName('item');
+      var ss = document.getElementsByClassName('widget_apps')[0].getElementsByClassName('widget_app');
       var new_posts = [];
-      for (var post in posts) {
-        Post new_post = new Post(
-            post.getElementsByTagName('h4')[0].text.trim(),
-            '',
-            '',
-            post.getElementsByTagName('h4')[0].getElementsByTagName('a')[0].attributes['href'],
-            post.getElementsByClassName('thumb_hover')[0].getElementsByTagName('img')[0].attributes['src']
+      for (var aa in ss) {
+        App new_post = new App(
+          aa.getElementsByClassName('widget_item_content')[0].getElementsByTagName('h4')[0].text.trim(),
+            aa.getElementsByClassName('widget_item_content')[0].getElementsByTagName('a')[0].attributes['href'],
+            aa.getElementsByClassName('thumb_hover')[0].getElementsByTagName('img')[0].attributes['src'],
+            aa.attributes['data-app-id'],
+            aa.getElementsByClassName('widget_item_text')[0].text.trim()
         );
         new_posts.add(new_post);
       }
       setState(() {
-        this.posts.addAll(Iterable.castFrom(new_posts));
+        this.apps.addAll(Iterable.castFrom(new_posts));
         this.opacity_value = 0.0;
       });
     });
@@ -47,7 +48,7 @@ class BestState extends State<BestFeeds> with AutomaticKeepAliveClientMixin {
   void initState() {
     super.initState();
     client = http.Client();
-    this.fetchBest();
+    this.fetchApps();
   }
 
   @override
@@ -56,29 +57,29 @@ class BestState extends State<BestFeeds> with AutomaticKeepAliveClientMixin {
     super.dispose();
   }
 
-//  _launchUrl(url) async {
-//    if (await canLaunch(url)) {
-//      await launch(url, forceWebView: true);
-//    } else {
-//      Scaffold.of(context).hideCurrentSnackBar();
-//      Scaffold.of(context).showSnackBar(new SnackBar(
-//        content: new Text('Cannot launch browser.'),
-//        duration: Duration(seconds: 2)
-//      ));
-//    }
-//  }
-
-  _launchUrl(post) {
-    Navigator.of(context).push(new PageRouteBuilder(
-        pageBuilder: (_, __, ___) => new PostPage(post: post)
-    ));
+  _launchUrl(url) async {
+    if (await canLaunch(url)) {
+      await launch(url, forceWebView: false);
+    } else {
+      Scaffold.of(context).hideCurrentSnackBar();
+      Scaffold.of(context).showSnackBar(new SnackBar(
+        content: new Text('Cannot launch browser.'),
+        duration: Duration(seconds: 2)
+      ));
+    }
   }
+
+//  _launchUrl(post) {
+//    Navigator.of(context).push(new PageRouteBuilder(
+//        pageBuilder: (_, __, ___) => new PostPage(post: post)
+//    ));
+//  }
 
   @override
   Widget build(BuildContext context) {
     return new ListView.builder(
         itemBuilder: (context, index) {
-          if (index == posts.length) {
+          if (index == apps.length) {
             return new Opacity(opacity: this.opacity_value, child: new Container(
                 padding: EdgeInsets.symmetric(vertical: 6.0),
                 child: new Image(
@@ -90,7 +91,7 @@ class BestState extends State<BestFeeds> with AutomaticKeepAliveClientMixin {
           }
           return new GestureDetector(
             onTap: () {
-              _launchUrl(posts[index]);
+              _launchUrl(apps[index].link);
             },
             child: new Card(
               elevation: 0.6,
@@ -99,17 +100,19 @@ class BestState extends State<BestFeeds> with AutomaticKeepAliveClientMixin {
                   new ListTile(
                       contentPadding:
                       EdgeInsets.symmetric(vertical: 14.0, horizontal: 8.0),
-                      leading: new Hero(tag: posts[index].link, child: FadeInImage.memoryNetwork(placeholder: kTransparentImage,
-                        image: posts[index].image,
-                        width: 100.0,
+                      leading: new Hero(tag: apps[index].link, child: FadeInImage.memoryNetwork(placeholder: kTransparentImage,
+                        image: apps[index].image,
+                        width: 70.0,
+                        height: 70.0,
+                        fit: BoxFit.cover,
                       )),
                       title: new Text(
-                        posts[index].title,
+                        apps[index].name,
                         style: TextStyle(
                             fontWeight: FontWeight.w400, fontSize: 16.0),
                       ),
                       subtitle: new Text(
-                        posts[index].author,
+                        apps[index].detail,
                         style: TextStyle(
                             fontWeight: FontWeight.w300, fontSize: 14.0),
                       )),
@@ -118,7 +121,7 @@ class BestState extends State<BestFeeds> with AutomaticKeepAliveClientMixin {
             ),
           );
         },
-        itemCount: posts.length+1);
+        itemCount: apps.length+1);
   }
 
   @override
