@@ -19,7 +19,7 @@ class PostDetail {
   final String author;
   final String link;
   String image;
-  String content;
+  dynamic content;
 
   PostDetail(
       this.title, this.date, this.author, this.link, this.image, this.content);
