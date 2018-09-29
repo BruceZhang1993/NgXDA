@@ -7,6 +7,7 @@ import 'package:ngxda/models.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share/share.dart';
 
 class PostPage extends StatefulWidget {
   final Post post;
@@ -22,6 +23,10 @@ class PostState extends State<PostPage> {
   http.Client client;
   PostDetail detail;
   var opacity_value = 0.0;
+  List<Choice> choices = const <Choice> [
+    const Choice(title: "Open in browser", icon: Icons.open_in_browser, name: 'browser'),
+    const Choice(title: "Share via...", icon: Icons.share, name: 'share')
+  ];
 
   PostState(this.post);
 
@@ -141,8 +146,8 @@ class PostState extends State<PostPage> {
       String allText = document.text.trim();
       if (document.children.length > 0) {
         for (dom.Element ele in document.children) {
-          if (ele.localName == 'a') {
-            allText = allText.replaceAll(ele.text, ele.text + '( '+ ele.attributes['href'] +' )');
+          if (ele.localName == 'a' && ele.text.length > 0) {
+            allText = allText.replaceFirst(ele.text, ele.text + '['+ ele.attributes['href'] +']');
           }
         }
       }
@@ -235,10 +240,48 @@ class PostState extends State<PostPage> {
     );
   }
 
+  _launchUrl(url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Cannot launch $url';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
+          actions: <Widget>[
+            PopupMenuButton<Choice> (
+              itemBuilder: (BuildContext context) {
+                return choices.map((choice) {
+                  return PopupMenuItem<Choice>(
+                    value: choice,
+                    child: new ListTile(
+                      contentPadding: EdgeInsets.all(0.0),
+                      leading: new Icon(choice.icon,
+                        color: new Color(0xFF666666),
+                        size: 26.0,
+                      ),
+                      title: Text(choice.title, style: TextStyle(
+                        fontSize: 16.0,
+                        color: new Color(0xFF666666)
+                      )),
+                    )
+                  );
+                }).toList();
+              },
+              onSelected: (choice) {
+                if (choice.name == 'browser') {
+                  _launchUrl(detail.link);
+                }
+                if (choice.name == 'share') {
+                  Share.share(detail.title + ' ' + detail.link + ' -- Share from ngXDA.');
+                }
+              },
+            ),
+          ],
           elevation: 0.0,
           title: new Container(
               child: new Center(

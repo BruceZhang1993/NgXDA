@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ngxda/feed/apps.dart';
 import 'package:ngxda/feed/best.dart';
+import 'package:ngxda/feed/device.dart';
 import 'package:ngxda/feed/latest.dart';
 
 class Feeds extends StatefulWidget {
@@ -12,11 +13,7 @@ class FeedsState extends State<Feeds> with SingleTickerProviderStateMixin {
   TabController _controller;
 
   void _tabHandler() {
-//    Scaffold.of(context).hideCurrentSnackBar();
-//    Scaffold.of(context).showSnackBar(new SnackBar(
-//      duration: Duration(seconds: 1),
-//      content: new Text(
-//          'You switched to index ' + _controller.index.toString() + '.')));
+
   }
 
   @override
@@ -45,9 +42,9 @@ class FeedsState extends State<Feeds> with SingleTickerProviderStateMixin {
                 controller: _controller,
                 labelStyle: TextStyle(fontSize: 14.0, fontFamily: 'Poppins'),
                 tabs: [
+                  Tab(text: 'DEVICE'),
                   Tab(text: 'LATEST'),
                   Tab(text: 'BEST'),
-                  Tab(text: 'TAGS'),
                   Tab(text: 'APPS'),
                 ],
               ),
@@ -56,9 +53,9 @@ class FeedsState extends State<Feeds> with SingleTickerProviderStateMixin {
           body: TabBarView(
             controller: _controller,
             children: [
+              new DeviceFeeds(),
               new LatestFeeds(),
               new BestFeeds(),
-              Icon(Icons.directions_bike),
               new Apps(),
             ],
           ),

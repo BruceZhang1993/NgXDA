@@ -25,6 +25,8 @@ dependencies:
   url_launcher: ^3.0.3
   transparent_image: ^0.1.0
   flutter_linkify: 1.0.0
+  device_info: ^0.2.1
+  share: ^0.5.3
 
 dev_dependencies:
   flutter_test:

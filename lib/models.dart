@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 class Post {
   final String title;
   final String date;
@@ -43,4 +45,12 @@ class App {
   String toString() {
     return "App<name: " + this.name + ">";
   }
+}
+
+class Choice {
+  const Choice({this.name, this.title, this.icon});
+
+  final String name;
+  final String title;
+  final IconData icon;
 }
