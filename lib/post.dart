@@ -147,7 +147,7 @@ class PostState extends State<PostPage> {
       if (document.children.length > 0) {
         for (dom.Element ele in document.children) {
           if (ele.localName == 'a' && ele.text.length > 0) {
-            allText = allText.replaceFirst(ele.text, ele.text + '['+ ele.attributes['href'] +']');
+            allText = allText.replaceFirst(ele.text, ele.text + '[ '+ ele.attributes['href'] +' ]');
           }
         }
       }
