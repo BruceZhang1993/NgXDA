@@ -4,6 +4,7 @@ import 'package:ngxda/feeds.dart';
 import 'package:device_info/device_info.dart';
 import 'package:ngxda/forums.dart';
 import 'package:ngxda/settings.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -14,6 +15,8 @@ class HomeState extends State<HomePage> {
   var current = 'feeds';
   DeviceInfoPlugin deviceInfo;
   AndroidDeviceInfo androidInfo;
+  String deviceName = '';
+  SharedPreferences prefs;
 
   Map<String, Widget> pages = new Map();
 
@@ -24,6 +27,16 @@ class HomeState extends State<HomePage> {
     deviceInfo.androidInfo.then((value) {
       setState(() {
         androidInfo = value;
+        deviceName = androidInfo.device;
+      });
+    });
+    SharedPreferences.getInstance().then((pref) {
+      this.prefs = pref;
+      setState(() {
+        String dv = this.prefs.getString('device');
+        if (dv != '') {
+          this.deviceName = dv;
+        }
       });
     });
   }
@@ -38,7 +51,7 @@ class HomeState extends State<HomePage> {
           pages[current] = new Forums();
           break;
         case 'settings':
-          pages[current] = new Settings();
+          pages[current] = new Settings(this);
           break;
         case 'donate':
           pages[current] = new Donate();
@@ -51,10 +64,10 @@ class HomeState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     String label;
-    if (androidInfo == null) {
+    if (deviceName == '') {
       label = 'Make XDA great again.';
     } else {
-      label = 'Make XDA great again / '+androidInfo.device;
+      label = 'Make XDA great again / '+deviceName;
     }
     return new Scaffold(
         drawer: new Drawer(
@@ -111,7 +124,7 @@ class HomeState extends State<HomePage> {
                   });
                   Navigator.of(context).pop();
                 },
-                selected: this.current == 'setings',
+                selected: this.current == 'settings',
               ),
               ListTile(
                 key: Key('donate'),

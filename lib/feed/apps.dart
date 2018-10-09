@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' show parse;
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:ngxda/models.dart';
 
@@ -56,15 +56,26 @@ class AppsState extends State<Apps> with AutomaticKeepAliveClientMixin {
     super.dispose();
   }
 
-  _launchUrl(url) async {
-    if (await canLaunch(url)) {
-      await launch(url, forceWebView: false);
-    } else {
-      Scaffold.of(context).hideCurrentSnackBar();
-      Scaffold.of(context).showSnackBar(new SnackBar(
-        content: new Text('Cannot launch browser.'),
-        duration: Duration(seconds: 2)
-      ));
+  _launchUrl(url, context) async {
+    try {
+      await launch(
+        url,
+        option: new CustomTabsOption(
+          toolbarColor: Theme.of(context).primaryColor,
+          enableDefaultShare: true,
+          enableUrlBarHiding: true,
+          showPageTitle: true,
+          animation: new CustomTabsAnimation.slideIn(),
+          extraCustomTabs: <String>[
+            // ref. https://play.google.com/store/apps/details?id=org.mozilla.firefox
+            'org.mozilla.firefox',
+            // ref. https://play.google.com/store/apps/details?id=com.microsoft.emmx
+            'com.microsoft.emmx',
+          ],
+        ),
+      );
+    } catch (e) {
+      debugPrint(e.toString());
     }
   }
 
@@ -90,7 +101,7 @@ class AppsState extends State<Apps> with AutomaticKeepAliveClientMixin {
           }
           return new GestureDetector(
             onTap: () {
-              _launchUrl(apps[index].link);
+              _launchUrl(apps[index].link, context);
             },
             child: new Card(
               elevation: 0.6,

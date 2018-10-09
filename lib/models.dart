@@ -54,3 +54,13 @@ class Choice {
   final String title;
   final IconData icon;
 }
+
+class SettingItem {
+  final String id;
+  final String title;
+  String value;
+  final String default_;
+  final String hint;
+
+  SettingItem(this.id, this.title, this.value, this.default_, this.hint);
+}

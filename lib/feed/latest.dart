@@ -1,9 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' show parse;
 import 'package:ngxda/post.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:ngxda/models.dart';
+import 'package:url_launcher/url_launcher.dart' as u;
 
 class LatestFeeds extends StatefulWidget {
   @override
@@ -17,6 +21,7 @@ class LatestState extends State<LatestFeeds> with AutomaticKeepAliveClientMixin 
   ScrollController scroll;
   bool reachedBottom = false;
   var opacity_value = 0.0;
+  SharedPreferences prefs;
 
   void fetchPage() {
     setState(() {
@@ -55,6 +60,9 @@ class LatestState extends State<LatestFeeds> with AutomaticKeepAliveClientMixin 
     scroll = new ScrollController();
     scroll.addListener(_scrollHandler);
     client = http.Client();
+    SharedPreferences.getInstance().then((pref) {
+      this.prefs = pref;
+    });
     this.fetchPage();
   }
 
@@ -87,10 +95,39 @@ class LatestState extends State<LatestFeeds> with AutomaticKeepAliveClientMixin 
 //    }
 //  }
 
-  _launchUrl(post) {
-    Navigator.of(context).push(new PageRouteBuilder(
-        pageBuilder: (_, __, ___) => new PostPage(post: post)
-    ));
+  _launchUrl2(url, context) async {
+    try {
+      await launch(
+        url,
+        option: new CustomTabsOption(
+          toolbarColor: Theme.of(context).primaryColor,
+          enableDefaultShare: true,
+          enableUrlBarHiding: true,
+          showPageTitle: true,
+          animation: new CustomTabsAnimation.slideIn(),
+          extraCustomTabs: <String>[
+            // ref. https://play.google.com/store/apps/details?id=org.mozilla.firefox
+            'org.mozilla.firefox',
+            // ref. https://play.google.com/store/apps/details?id=com.microsoft.emmx
+            'com.microsoft.emmx',
+          ],
+        ),
+      );
+    } catch (e) {
+      u.launch(url);
+    }
+  }
+
+  _launchUrl(Post post) {
+    String browser = this.prefs.getString('browser');
+    if (browser != null && browser.toLowerCase() == 'yes') {
+      _launchUrl2(post.link, context);
+    } else {
+      Navigator.of(context).push(new CupertinoPageRoute(
+          maintainState: true,
+          builder: (context) => new PostPage(post: post)
+      ));
+    }
   }
 
   @override
