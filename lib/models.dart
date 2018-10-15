@@ -64,3 +64,16 @@ class SettingItem {
 
   SettingItem(this.id, this.title, this.value, this.default_, this.hint);
 }
+
+// Threads Models
+
+class MostActiveThread {
+  final String title;
+  final String date;
+  final String author;
+  final String heat;
+  final String link;
+  final String image;
+
+  MostActiveThread(this.title, this.date, this.author, this.heat, this.link, this.image);
+}

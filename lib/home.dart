@@ -3,6 +3,7 @@ import 'package:ngxda/donate.dart';
 import 'package:ngxda/feeds.dart';
 import 'package:device_info/device_info.dart';
 import 'package:ngxda/forums.dart';
+import 'package:ngxda/localization.dart';
 import 'package:ngxda/settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,7 +13,7 @@ class HomePage extends StatefulWidget {
 }
 
 class HomeState extends State<HomePage> {
-  var current = 'feeds';
+  var current = 'forums';
   DeviceInfoPlugin deviceInfo;
   AndroidDeviceInfo androidInfo;
   String deviceName = '';
@@ -34,7 +35,7 @@ class HomeState extends State<HomePage> {
       this.prefs = pref;
       setState(() {
         String dv = this.prefs.getString('device');
-        if (dv != '') {
+        if (dv != '' && dv != null) {
           this.deviceName = dv;
         }
       });
@@ -64,10 +65,10 @@ class HomeState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     String label;
-    if (deviceName == '') {
+    if (deviceName == '' || deviceName == null) {
       label = 'Make XDA great again.';
     } else {
-      label = 'Make XDA great again / '+deviceName;
+      label = "Make XDA great again  \n\n"+deviceName;
     }
     return new Scaffold(
         drawer: new Drawer(
@@ -93,7 +94,7 @@ class HomeState extends State<HomePage> {
               ListTile(
                 key: Key('feeds'),
                 leading: new Icon(Icons.rss_feed),
-                title: new Text('XDA Feeds'),
+                title: new Text(AppLocalizations.of(context).translate['feeds']),
                 onTap: () {
                   setState(() {
                     this.current = 'feeds';
@@ -105,7 +106,7 @@ class HomeState extends State<HomePage> {
               ListTile(
                 key: Key('forums'),
                 leading: new Icon(Icons.forum),
-                title: new Text('Forums'),
+                title: new Text(AppLocalizations.of(context).translate['forums']),
                 onTap: () {
                   setState(() {
                     this.current = 'forums';
@@ -117,7 +118,7 @@ class HomeState extends State<HomePage> {
               ListTile(
                 key: Key('settings'),
                 leading: new Icon(Icons.settings),
-                title: new Text('Settings'),
+                title: new Text(AppLocalizations.of(context).translate['settings']),
                 onTap: () {
                   setState(() {
                     this.current = 'settings';
@@ -129,7 +130,7 @@ class HomeState extends State<HomePage> {
               ListTile(
                 key: Key('donate'),
                 leading: new Icon(Icons.attach_money),
-                title: new Text('Donate'),
+                title: new Text(AppLocalizations.of(context).translate['donate']),
                 onTap: () {
                   setState(() {
                     this.current = 'donate';

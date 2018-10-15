@@ -40,12 +40,12 @@ class DonateState extends State<Donate> {
               new Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  new Icon(Icons.payment, size: 45.0, color: Colors.blue),
-                  new Text('ALIPAY', style: TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13.0
-                  ))
+//                  new Icon(Icons.payment, size: 45.0, color: Colors.blue),
+//                  new Text('ALIPAY', style: TextStyle(
+//                      color: Colors.blue,
+//                      fontWeight: FontWeight.w600,
+//                      fontSize: 13.0
+//                  ))
                 ],
               )
             ],

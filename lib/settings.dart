@@ -23,6 +23,7 @@ class SettingsState extends State<Settings> {
     super.initState();
     items = [
       new SettingItem('device', 'Device name', '', 'Auto', 'Set your device name'),
+      new SettingItem('deviceid', 'Device ID', '', 'Not set', 'Your device forum ID'),
       new SettingItem('browser', 'Read in browser', '', 'No', 'Yes/No'),
     ];
     SharedPreferences.getInstance().then((pref) {

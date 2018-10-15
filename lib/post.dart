@@ -270,13 +270,12 @@ class PostState extends State<PostPage> {
                   return PopupMenuItem<Choice>(
                     value: choice,
                     child: new ListTile(
-                      contentPadding: EdgeInsets.all(0.0),
                       leading: new Icon(choice.icon,
                         color: new Color(0xFF666666),
-                        size: 26.0,
+                        size: 24.0,
                       ),
                       title: Text(choice.title, style: TextStyle(
-                        fontSize: 16.0,
+                        fontSize: 14.0,
                         color: new Color(0xFF666666)
                       )),
                     )

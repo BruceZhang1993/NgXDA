@@ -45,8 +45,8 @@ android {
         applicationId "io.github.brucezhang1993.ngxda"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 5
-        versionName '0.1.5'
+        versionCode 7
+        versionName '0.1.6'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
