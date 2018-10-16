@@ -79,12 +79,6 @@ class AppsState extends State<Apps> with AutomaticKeepAliveClientMixin {
     }
   }
 
-//  _launchUrl(post) {
-//    Navigator.of(context).push(new PageRouteBuilder(
-//        pageBuilder: (_, __, ___) => new PostPage(post: post)
-//    ));
-//  }
-
   @override
   Widget build(BuildContext context) {
     return new ListView.builder(

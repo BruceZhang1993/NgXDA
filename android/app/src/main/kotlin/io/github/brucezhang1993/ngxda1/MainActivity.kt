@@ -1,4 +1,4 @@
-package io.github.brucezhang1993.ngxda
+package io.github.brucezhang1993.ngxda1
 
 import android.os.Bundle
 import android.os.Build

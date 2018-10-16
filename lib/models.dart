@@ -77,3 +77,21 @@ class MostActiveThread {
 
   MostActiveThread(this.title, this.date, this.author, this.heat, this.link, this.image);
 }
+
+class ThreadMeta {
+  final String title;
+  final String time;
+  final String replies;
+  final String reviews;
+  final String link;
+
+  ThreadMeta(this.title, this.time, this.replies, this.reviews, this.link);
+}
+
+// Section
+class SectionMeta {
+  final String title;
+  final String link;
+
+  SectionMeta(this.title, this.link);
+}

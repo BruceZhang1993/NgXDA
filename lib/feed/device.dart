@@ -49,8 +49,8 @@ class DeviceState extends State<DeviceFeeds> with AutomaticKeepAliveClientMixin 
   void fetchPage() {
     setState(() {
       String dv = this.prefs.getString('device');
-      if (dv != null && dv != '') {
-        this.deviceName = dv;
+      if (dv != null && dv.isNotEmpty) {
+        this.deviceName = dv.trim();
       }
     });
     setState(() {
@@ -100,18 +100,6 @@ class DeviceState extends State<DeviceFeeds> with AutomaticKeepAliveClientMixin 
     }
   }
 
-//  _launchUrl(url) async {
-//    if (await canLaunch(url)) {
-//      await launch(url, forceWebView: true);
-//    } else {
-//      Scaffold.of(context).hideCurrentSnackBar();
-//      Scaffold.of(context).showSnackBar(new SnackBar(
-//        content: new Text('Cannot launch browser.'),
-//        duration: Duration(seconds: 2)
-//      ));
-//    }
-//  }
-
   _launchUrl2(url, context) async {
     try {
       await launch(
@@ -137,7 +125,7 @@ class DeviceState extends State<DeviceFeeds> with AutomaticKeepAliveClientMixin 
 
   _launchUrl(Post post) {
     String browser = this.prefs.getString('browser');
-    if (browser != null && browser.toLowerCase() == 'yes') {
+    if (browser != null && browser.isNotEmpty && browser.toLowerCase() == 'yes') {
       _launchUrl2(post.link, context);
     } else {
       Navigator.of(context).push(new CupertinoPageRoute(

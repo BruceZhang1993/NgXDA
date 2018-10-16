@@ -23,7 +23,8 @@ class AppLocalizations {
       'best': 'Best',
       'most_active': 'Most Active Topics',
       'latest': 'Latest',
-      'apps': 'Apps'
+      'apps': 'Apps',
+      'section': 'Sections'
     },
     'zh': {
       'settings': '设置',
@@ -37,6 +38,7 @@ class AppLocalizations {
       'most_active': '近期活跃热帖',
       'latest': '最新',
       'apps': '推荐应用',
+      'section': '论坛板块'
     },
   };
 

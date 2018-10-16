@@ -16,15 +16,20 @@ class DeviceForums extends StatefulWidget {
 
 class DeviceState extends State<DeviceForums>
     with AutomaticKeepAliveClientMixin {
-  String deviceid = 'oneplus-6';
   List<MostActiveThread> actives = [];
+  Map<SectionMeta, List<ThreadMeta>> entries = {};
   http.Client client;
+  SharedPreferences prefs;
+  String deviceid = 'oneplus-6';
 
   @override
   void initState() {
     super.initState();
     client = http.Client();
-    fetchPage();
+    SharedPreferences.getInstance().then((pref) {
+      this.prefs = pref;
+      this.fetchPage();
+    });
   }
 
   @override
@@ -34,7 +39,13 @@ class DeviceState extends State<DeviceForums>
   }
 
   void fetchPage() {
-    if (deviceid != null && deviceid != '') {
+    setState(() {
+      String did = this.prefs.getString('deviceid');
+      if (did != null && did.isNotEmpty) {
+        deviceid = did.trim();
+      }
+    });
+    if (deviceid.isNotEmpty) {
       String uri = 'https://forum.xda-developers.com/' + deviceid;
       client.get(uri).then((http.Response response) {
         var document = parse(response.body);
@@ -42,7 +53,6 @@ class DeviceState extends State<DeviceForums>
         List<MostActiveThread> newlist = [];
         var elements = document.querySelectorAll(
             '.topRankedThreadsForumDisplayCategory ul li .rankedThread');
-        print(elements.length);
         for (var element in elements) {
           MostActiveThread thread = new MostActiveThread(
             element.querySelector('.rankedTitleLink').text.trim(),
@@ -55,24 +65,35 @@ class DeviceState extends State<DeviceForums>
           );
           newlist.add(thread);
         }
+        Map<SectionMeta, List<ThreadMeta>> tmp_entries = {};
+        elements = document.querySelectorAll('.forum-childforum .forumbox.box-shadow');
+        for (var element in elements) {
+          var captionElement = element.querySelector('a.flink');
+          SectionMeta meta = new SectionMeta(
+              captionElement.text.trim(),
+              'https://forum.xda-developers.com' + captionElement.attributes['href']
+          );
+          List<ThreadMeta> tmp_threads = [];
+          var elements2 = element.querySelectorAll('.thread-row.thread-row-unread');
+          for (var element2 in elements2) {
+            ThreadMeta meta2 = new ThreadMeta(
+              element2.querySelector('.thread-title-cell a').text.trim(),
+              element2.querySelector('.time-cell').text.trim(),
+              element2.querySelector('.reply-cell').text.trim(),
+              element2.querySelector('.count-cell').text.trim(),
+              'https://forum.xda-developers.com' + element2.querySelector('.threadTitle').attributes['href'],
+            );
+            tmp_threads.add(meta2);
+          }
+          tmp_entries[meta] = tmp_threads;
+        }
         setState(() {
           actives = newlist;
+          entries = tmp_entries;
         });
       });
     }
   }
-
-//  _launchUrl(url) async {
-//    if (await canLaunch(url)) {
-//      await launch(url, forceWebView: true);
-//    } else {
-//      Scaffold.of(context).hideCurrentSnackBar();
-//      Scaffold.of(context).showSnackBar(new SnackBar(
-//        content: new Text('Cannot launch browser.'),
-//        duration: Duration(seconds: 2)
-//      ));
-//    }
-//  }
 
   _launchUrl2(url, context) async {
     try {
@@ -111,7 +132,8 @@ class DeviceState extends State<DeviceForums>
 
   @override
   Widget build(BuildContext context) {
-    return new Column(
+    return new ListView(
+      shrinkWrap: true,
       children: <Widget>[
         new Container(
           child: Text(AppLocalizations.of(context).translate['most_active'],
@@ -121,74 +143,165 @@ class DeviceState extends State<DeviceForums>
               fontWeight: FontWeight.w500
             ),
           ),
-          padding: EdgeInsets.symmetric(vertical:6.0)
+          padding: EdgeInsets.symmetric(vertical:10.0),
+          alignment: Alignment.center,
         ),
-        Expanded(
-          child: ListView.builder(
-              itemBuilder: (context, index) {
-                return new GestureDetector(
-                  onTap: () {
-                    _launchUrl2(actives[index].link, context);
-                  },
-                  child: new Card(
-                    elevation: 0.4,
-                    child: new Column(
-                      children: <Widget>[
-                        new ListTile(
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 4.0, horizontal: 6.0),
-                            leading: new Hero(
-                                tag: actives[index].link,
-                                child: FadeInImage.memoryNetwork(
-                                  placeholder: kTransparentImage,
-                                  image: 'https:' + actives[index].image,
-                                  height: 90.0,
-                                )),
-                            title: new Text(
-                              actives[index].title,
-                              style: TextStyle(
-                                height: 1.2,
-                                  fontWeight: FontWeight.w400, fontSize: 15.0),
-                            ),
-                            subtitle: new Text(
-                              actives[index].author,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w300, fontSize: 13.0),
-                            )),
-                        new Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 2.0, horizontal: 12.0),
-                            child: new Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                                new Icon(Icons.people,
-                                  color: Colors.blueGrey,
-                                  size: 18.0,
-                                ),
-                                new Text(
-                                  ' ' + actives[index].heat + '    ',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 13.0,
-                                      color: Colors.blueGrey),
-                                  textAlign: TextAlign.left,
-                                ),
-                                new Text(
-                                  actives[index].date,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w300,
-                                      fontSize: 13.0,
-                                      color: Colors.blueGrey),
-                                  textAlign: TextAlign.right,
-                                )
-                              ],
-                            ))
-                      ],
-                    ),
-                  ),
-                );
+        Column(
+          children: List.generate(actives.length, (index) {
+            return new GestureDetector(
+              onTap: () {
+                _launchUrl2(actives[index].link, context);
               },
-              itemCount: actives.length),
+              child: new Card(
+                elevation: 0.4,
+                child: new Column(
+                  children: <Widget>[
+                    new ListTile(
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: 2.0, horizontal: 6.0),
+                        leading: new Hero(
+                            tag: actives[index].link,
+                            child: FadeInImage.memoryNetwork(
+                              placeholder: kTransparentImage,
+                              image: 'https:' + actives[index].image,
+                              height: 65.0,
+                            )),
+                        title: new Text(
+                          actives[index].title,
+                          style: TextStyle(
+                              height: 1.2,
+                              fontWeight: FontWeight.w400, fontSize: 13.5),
+                        ),
+                        subtitle: new Text(
+                          actives[index].author,
+                          style: TextStyle(
+                              height: 1.2,
+                              fontWeight: FontWeight.w300, fontSize: 12.0),
+                        )),
+                    new Container(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 2.0, horizontal: 12.0),
+                        child: new Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            new Icon(Icons.people,
+                              color: Colors.blueGrey,
+                              size: 18.0,
+                            ),
+                            new Text(
+                              ' ' + actives[index].heat + '    ',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 13.0,
+                                  color: Colors.blueGrey),
+                              textAlign: TextAlign.left,
+                            ),
+                            new Text(
+                              actives[index].date,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.blueGrey),
+                              textAlign: TextAlign.right,
+                            )
+                          ],
+                        ))
+                  ],
+                ),
+              ),
+            );
+          }),
+        ),
+        Column(
+          children: List.generate(entries.length, (index) {
+            return new GestureDetector(
+                onTap: () {
+                  _launchUrl2(entries.keys.elementAt(index).link, context);
+                },
+                child: new Column(
+                  children: <Widget>[
+                    new Container(
+                      child: Text(entries.keys.elementAt(index).title,
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.blueGrey,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical:10.0),
+                      alignment: Alignment.center,
+                    ),
+                    Column(
+                      children: List.generate(entries.values.elementAt(index).length, (i) {
+                        ThreadMeta meta = entries.values.elementAt(index)[i];
+                        return new GestureDetector(
+                          onTap: () {
+                            _launchUrl2(meta.link, context);
+                          },
+                          child: new Card(
+                            elevation: 0.4,
+                            child: new Column(
+                              children: <Widget>[
+                                new ListTile(
+                                    contentPadding: EdgeInsets.symmetric(
+                                        vertical: 2.0, horizontal: 12.0),
+                                    title: new Text(
+                                      meta.title,
+                                      style: TextStyle(
+                                          height: 0.8,
+                                          fontWeight: FontWeight.w400, fontSize: 14.0),
+                                    ),
+                                ),
+                                new Container(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 2.0, horizontal: 12.0),
+                                    child: new Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: <Widget>[
+                                        new Icon(Icons.reply_all,
+                                          color: Colors.blueGrey,
+                                          size: 18.0,
+                                        ),
+                                        new Text(
+                                          ' ' + meta.replies + '    ',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 13.0,
+                                              color: Colors.blueGrey),
+                                          textAlign: TextAlign.left,
+                                        ),
+                                        new Icon(Icons.remove_red_eye,
+                                          color: Colors.blueGrey,
+                                          size: 18.0,
+                                        ),
+                                        new Text(
+                                          ' ' + meta.reviews + '    ',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 13.0,
+                                              color: Colors.blueGrey),
+                                          textAlign: TextAlign.left,
+                                        ),
+                                        new Text(
+                                          meta.time,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w300,
+                                              fontSize: 13.0,
+                                              color: Colors.blueGrey),
+                                          textAlign: TextAlign.right,
+                                        )
+                                      ],
+                                    ))
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  ],
+                )
+            );
+          }),
         )
       ],
     );
