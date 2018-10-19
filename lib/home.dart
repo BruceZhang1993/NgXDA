@@ -13,7 +13,7 @@ class HomePage extends StatefulWidget {
 }
 
 class HomeState extends State<HomePage> {
-  var current = 'forums';
+  var current = 'feeds';
   DeviceInfoPlugin deviceInfo;
   AndroidDeviceInfo androidInfo;
   String deviceName = '';

@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' show parse;
@@ -104,8 +105,8 @@ class PostState extends State<PostPage> {
     if (document.children.length == 0 ||
         document.classes.contains('dropcap') ||
         document.localName == 'p' ||
-        document.localName == 'tr') {
-      if (document.localName == 'h1' || document.localName == 'style') {
+        document.localName == 'tr' || document.localName == 'ul' || document.localName == 'blockquote') {
+      if (document.localName == 'h1' || document.localName == 'style' || document.classes.contains('et_social_icons_container')) {
         return [];
       }
       if (document.localName == 'h3') {
@@ -122,52 +123,122 @@ class PostState extends State<PostPage> {
         ];
       }
       if (document.localName == 'tr') {
+        List<dom.Element> cells = document.querySelectorAll('td,th');
+        List<Expanded> rowChildren = [];
+        for (dom.Element cell in cells) {
+          if (cell.localName == 'td') {
+            rowChildren.add(Expanded(child: Container(child: new Text(cell.text.trim(),
+                style: TextStyle(
+                    fontWeight: FontWeight.w300,
+                    color: Colors.black45,
+                    fontSize: 12.0,
+                    height: 1.1
+                )
+            ))));
+          }
+          if (cell.localName == 'th') {
+            rowChildren.add(Expanded(child: Container(child: new Text(cell.text.trim(),
+                style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black45,
+                    fontSize: 13.0,
+                    height: 1.2
+                )
+            ))));
+          }
+        }
         return [
-          new Text(
-            document.text.trim().replaceAll("\n", "     "),
-            style: TextStyle(
-                fontSize: 15.0,
+          Container(child: new Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: rowChildren
+          ), margin: EdgeInsets.only(top: 4.0))
+        ];
+      }
+      if (document.localName == 'ul') {
+        var lis = document.getElementsByTagName('li');
+        List<Container> uList = <Container>[];
+        for (var li in lis) {
+          uList.add(new Container(
+            child: new Text('- ' + li.text.trim(),
+              style: TextStyle(
                 color: new Color(0xFF666666),
-                fontWeight: FontWeight.w300,
-                height: 1.3),
+                fontSize: 13.0,
+                height: 1.1
+              ),
+            )
+          ));
+        }
+        return uList;
+      }
+      if (document.localName == 'blockquote') {
+        return [
+          new Container(
+            child: new Text(
+              document.text.trim(),
+              style: TextStyle(
+                  fontSize: 13.5,
+                  color: new Color(0xFF888888),
+                  fontWeight: FontWeight.w400,
+                  height: 1.15),
+            ),
+            decoration: new BoxDecoration(color: Color(0x44C0C0C0)),
+            padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 10.0),
           )
         ];
       }
       if (document.localName == 'img') {
+        String src = document.attributes['src'];
         return [
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: new FadeInImage.memoryNetwork(
                 placeholder: kTransparentImage,
-                image: document.attributes['src']),
+                image: src),
           )
         ];
       }
-      String allText = document.text.trim();
+      String allText = document.outerHtml.trim();
+      TextStyle linkStyle = new TextStyle(
+        color: Colors.lightBlue,
+        fontWeight: FontWeight.w400,
+      );
+      List<TextSpan> textSpans = [];
       if (document.children.length > 0) {
-        for (dom.Element ele in document.children) {
-          if (ele.localName == 'a' && ele.text.length > 0) {
-            allText = allText.replaceFirst(ele.text, ele.text + '[ '+ ele.attributes['href'] +' ]');
+        RegExp re = new RegExp(r'<a\s+href="(.*?)".*?>(.*?)</a>', caseSensitive: false);
+        allText.splitMapJoin(re,
+          onMatch: (match) {
+            String url = match.group(1);
+            if (url.startsWith('/')) {
+              url = "https://www.xda-developers.com/" + url;
+            }
+            LinkSpan span = new LinkSpan(
+              style: linkStyle,
+              text: match.group(2),
+              url: url
+            );
+            textSpans.add(span);
+          },
+          onNonMatch: (nonmatch) {
+            TextSpan span = new TextSpan(
+              text: nonmatch.replaceAll(new RegExp(r'<p style="text-align: center;">|<p class="dropcap">|<p>|</p>'), '').replaceAll('&nbsp;', '')
+            );
+            textSpans.add(span);
           }
-        }
+        );
       }
       return [
         new Container(
           padding: EdgeInsets.symmetric(vertical: 4.0),
-          child: Linkify(
-            text: allText,
-            style: TextStyle(
-              fontSize: 15.0,
-              fontWeight: FontWeight.w400,
-              color: new Color(0xFF444444),
-              height: 1.1
-            ),
-            linkStyle: TextStyle(
-              color: Colors.blueAccent
-            ),
-            onOpen: (url) async {
-              await _launchUrl(url, context);
-            },
+          child: RichText(
+              text: TextSpan(
+                children: textSpans,
+                style: TextStyle(
+                  color: Color(0xFF444444),
+                  fontSize: 14.5,
+                  height: 1.2
+                )
+              )
           )
         )
       ];
@@ -255,7 +326,11 @@ class PostState extends State<PostPage> {
       ),
     );
     } catch (e) {
-      u.launch(url);
+      u.canLaunch(url).then((can) {
+        if (can) {
+          u.launch(url);
+        }
+      });
     }
   }
 
@@ -327,5 +402,38 @@ class Separator extends StatelessWidget {
         height: 2.0,
         width: 60.0,
         color: new Color(0xff00c6ff));
+  }
+}
+
+class LinkSpan extends TextSpan {
+  LinkSpan({ TextStyle style, String url, String text }) : super(
+      style: style,
+      text: text ?? url,
+      recognizer: TapGestureRecognizer()..onTap = () {
+        _launchUrl(url);
+      }
+  );
+
+  static _launchUrl(url) async {
+    try {
+      await launch(
+        url,
+        option: new CustomTabsOption(
+          toolbarColor: Colors.deepOrange,
+          enableDefaultShare: true,
+          enableUrlBarHiding: true,
+          showPageTitle: true,
+          animation: new CustomTabsAnimation.slideIn(),
+          extraCustomTabs: <String>[
+            // ref. https://play.google.com/store/apps/details?id=org.mozilla.firefox
+            'org.mozilla.firefox',
+            // ref. https://play.google.com/store/apps/details?id=com.microsoft.emmx
+            'com.microsoft.emmx',
+          ],
+        ),
+      );
+    } catch (e) {
+      u.launch(url);
+    }
   }
 }

@@ -88,6 +88,52 @@ class ThreadMeta {
   ThreadMeta(this.title, this.time, this.replies, this.reviews, this.link);
 }
 
+class DeviceMeta {
+  final String deviceName;
+  final String deviceId;
+  final String threadLink;
+
+  DeviceMeta(this.deviceName, this.deviceId, this.threadLink);
+}
+
+class User {
+  final String name;
+  final String link;
+  final String thumb;
+  final String description;
+  final String thanks;
+  final String posts;
+  final String isp;
+  final String city;
+  final String country;
+  final List<DeviceMeta> devices;
+  final dynamic signature;
+
+  User(this.name, this.link, this.thumb, this.description, this.thanks, this.posts, this.isp, this.city, this.country, this.devices, this.signature);
+}
+
+class UserMeta {
+  final String name;
+  final String link;
+  final String thumb;
+  final String description;
+  final String thanks;
+  final String posts;
+
+  UserMeta(this.name, this.link, this.description, this.thanks, this.posts, this.thumb);
+}
+
+class Thread {
+  final String title;
+  final UserMeta author;
+  final String datetime;
+  final int totalPage;
+  final int replyCount;
+  List<dynamic> contents = [];
+
+  Thread(this.title, this.author, this.datetime, this.totalPage, this.replyCount);
+}
+
 // Section
 class SectionMeta {
   final String title;

@@ -22,6 +22,10 @@ class DeviceState extends State<DeviceForums>
   SharedPreferences prefs;
   String deviceid = 'oneplus-6';
 
+  List<Tab> tabs = <Tab>[
+    Tab(text: 'Overview'),
+  ];
+
   @override
   void initState() {
     super.initState();
