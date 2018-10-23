@@ -71,3 +71,4 @@ build/
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 /android/key.properties
 将删除 android/key.properties
+key.jks

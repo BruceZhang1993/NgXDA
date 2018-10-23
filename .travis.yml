@@ -34,9 +34,6 @@ script:
 cache:
   directories:
   - "$HOME/.pub-cache"
-before_install:
-- openssl aes-256-cbc -K $encrypted_07a3a6eaa6eb_key -iv $encrypted_07a3a6eaa6eb_iv
-  -in key.jks.enc -out key.jks -d
 deploy:
   provider: releases
   api_key:
@@ -45,3 +42,6 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
+before_install:
+- openssl aes-256-cbc -K $encrypted_07a3a6eaa6eb_key -iv $encrypted_07a3a6eaa6eb_iv
+  -in key.jks.enc -out key.jks -d
