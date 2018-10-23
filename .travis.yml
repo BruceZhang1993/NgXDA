@@ -1,0 +1,47 @@
+os: linux
+language: android
+licenses:
+- android-sdk-preview-license-.+
+- android-sdk-license-.+
+- google-gdk-license-.+
+android:
+  components:
+  - tools
+  - platform-tools
+  - build-tools-25.0.3
+  - android-25
+  - sys-img-armeabi-v7a-google_apis-25
+  - extra-android-m2repository
+  - extra-google-m2repository
+  - extra-google-android-support
+jdk: oraclejdk8
+sudo: false
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - libstdc++6
+    - fonts-droid
+before_script:
+- wget http://services.gradle.org/distributions/gradle-3.5-bin.zip
+- unzip -qq gradle-3.5-bin.zip
+- export GRADLE_HOME=$PWD/gradle-3.5
+- export PATH=$GRADLE_HOME/bin:$PATH
+- git clone https://github.com/flutter/flutter.git -b alpha --depth 1
+script:
+- "./flutter/bin/flutter -v build apk"
+cache:
+  directories:
+  - "$HOME/.pub-cache"
+before_install:
+- openssl aes-256-cbc -K $encrypted_07a3a6eaa6eb_key -iv $encrypted_07a3a6eaa6eb_iv
+  -in key.jks.enc -out key.jks -d
+deploy:
+  provider: releases
+  api_key:
+    secure: Pf/FD9fwLip11OH4LTp5+i3QBFLffcTFqF9sVrDJIjWi5fiR3Q2U05oWwMwto2QMMSflnEIsbBupXqnG36aFJmk+IrJ2cZXUXeUgo9yNqu/ZmVq7/hj0vLQ916ZaFHNefT1REkqXgSnxa6BF1yttN3T6cC2W8irHDhWUy8C4DFNMHcrQbu8kF30PeqJi8vahDk6OWVMjUzc8HZbpo/lzwfqLMxAY7Y9RlbBYzUnLz+yAs99ZOuZKS1K71f/Ti/v9qO5hhlSqj9pg1cEfyDc05+uh4SOEUfRCikjBN2dO5wqIykWWdEv64I43siXsEh69Sc/bxSHQeAgt3bPAJC5pJWX5S5mQjEq5M3bv6lLVH/sY5L8T2QijzcvQ1hG5Tc10jcV5oK91D+yYKSjaJZYjvW2T27eJoEAXT5TZF4MbAMBqCpI+iyBWWeHMLJaFMe7rODTJzvnQm47RAWI1VQY/M37vpob0IQiTNALhJnMREMd/MHazNRJcZeeuI1nUqlKWoXyyLoCcF96uH8BifGCKmwO2qaFT6vps1xlZcOmZblgYvckaEVTLxpURh3EIPWL9zaVubYo3nOOyB5/JrOlseYPoG4Uu7AsWImLJ/YAqBmT27PmGcFMl2YcwYT2tl0P/LPr7LoP0fklXZ5ui01IoMnZ+QKCMnwr8vSjkjg3u0U8=
+  file: app/build/outputs/apk/app-release.apk
+  skip_cleanup: true
+  on:
+    tags: true

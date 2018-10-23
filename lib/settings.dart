@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ngxda/home.dart';
+import 'package:ngxda/localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ngxda/models.dart';
 
@@ -22,9 +23,9 @@ class SettingsState extends State<Settings> {
   void initState() {
     super.initState();
     items = [
-      new SettingItem('device', 'Device name', '', 'Auto', 'Set your device name'),
-      new SettingItem('deviceid', 'Device ID', '', 'Not set', 'Your device forum ID'),
-      new SettingItem('browser', 'Read in browser', '', 'No', 'Yes/No'),
+      new SettingItem('device', 'device_name', '', 'auto', 'Set your device name'),
+      new SettingItem('deviceid', 'device_id', '', 'not_set', 'Your device forum ID'),
+      new SettingItem('browser', 'use_browser', '', 'no', 'Yes/No'),
     ];
     SharedPreferences.getInstance().then((pref) {
       this.prefs = pref;
@@ -80,6 +81,16 @@ class SettingsState extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
+    for (SettingItem item in items) {
+      String transText = AppLocalizations.of(context).translate[item.title];
+      if (transText != null && transText.isNotEmpty) {
+        item.title = transText;
+      }
+      String transText2 = AppLocalizations.of(context).translate[item.default_];
+      if (transText2 != null && transText2.isNotEmpty) {
+        item.default_ = transText2;
+      }
+    }
     return new Container(
         child: new ListView.builder(
           itemCount: items.length,

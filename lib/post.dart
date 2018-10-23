@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' show parse;
+import 'package:ngxda/localization.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:ngxda/models.dart';
 import 'package:html/dom.dart' as dom;
@@ -24,9 +25,9 @@ class PostState extends State<PostPage> {
   http.Client client;
   PostDetail detail;
   var opacity_value = 0.0;
-  List<Choice> choices = const <Choice> [
-    const Choice(title: "Open in browser", icon: Icons.open_in_browser, name: 'browser'),
-    const Choice(title: "Share via...", icon: Icons.share, name: 'share')
+  List<Choice> choices = <Choice> [
+    Choice(title: "open_in_browser", icon: Icons.open_in_browser, name: 'browser'),
+    Choice(title: "share_via", icon: Icons.share, name: 'share')
   ];
 
   PostState(this.post);
@@ -189,6 +190,9 @@ class PostState extends State<PostPage> {
       }
       if (document.localName == 'img') {
         String src = document.attributes['src'];
+        if (src.startsWith('/')) {
+          src = 'https:' + src;
+        }
         return [
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
@@ -198,35 +202,69 @@ class PostState extends State<PostPage> {
           )
         ];
       }
+
+      if (document.localName == 'iframe') {
+        String video = document.attributes['src'];
+        TextStyle linkStyle = new TextStyle(
+          color: Colors.lightBlue,
+          fontWeight: FontWeight.w400,
+        );
+        if (video != null && video.isNotEmpty) {
+          return [
+            Container(
+              child: new RichText(text: new LinkSpan(
+                  style: linkStyle,
+                  text: 'Click to watch video',
+                  url: video
+              ))
+            )
+          ];
+        } else {
+          return [];
+        }
+      }
+
       String allText = document.outerHtml.trim();
+
+      allText = allText.splitMapJoin(new RegExp(r'<iframe.*?src="(.*?)".*?>.*?</iframe>', caseSensitive: false),
+        onMatch: (match) {
+          return '<a href="'+ match.group(1) +'">Click to watch this video.</a>';
+        },
+        onNonMatch: (nomatch) {
+          return nomatch;
+        }
+      );
+
       TextStyle linkStyle = new TextStyle(
         color: Colors.lightBlue,
         fontWeight: FontWeight.w400,
       );
       List<TextSpan> textSpans = [];
       if (document.children.length > 0) {
-        RegExp re = new RegExp(r'<a\s+href="(.*?)".*?>(.*?)</a>', caseSensitive: false);
+        RegExp re = new RegExp(r'<a(.*?)href="(.*?)".*?>(.*?)</a>', caseSensitive: false);
         allText.splitMapJoin(re,
           onMatch: (match) {
-            String url = match.group(1);
+            String url = match.group(2);
             if (url.startsWith('/')) {
               url = "https://www.xda-developers.com/" + url;
             }
             LinkSpan span = new LinkSpan(
               style: linkStyle,
-              text: match.group(2),
+              text: ' ' + match.group(3).replaceAll('&nbsp;', ' ').replaceAll('&amp;', '&') + ' ',
               url: url
             );
             textSpans.add(span);
           },
           onNonMatch: (nonmatch) {
             TextSpan span = new TextSpan(
-              text: nonmatch.replaceAll(new RegExp(r'<p style="text-align: center;">|<p class="dropcap">|<p>|</p>'), '').replaceAll('&nbsp;', '')
+              text: nonmatch.replaceAll(new RegExp(r'<p style="text-align: center;">|<p class="dropcap">|<p>|</p>'), '')
+                  .replaceAll('&nbsp;', '').replaceAll('&amp;', '&')
             );
             textSpans.add(span);
           }
         );
       }
+
       return [
         new Container(
           padding: EdgeInsets.symmetric(vertical: 4.0),
@@ -336,6 +374,12 @@ class PostState extends State<PostPage> {
 
   @override
   Widget build(BuildContext context) {
+    for (Choice c in choices) {
+      String transText = AppLocalizations.of(context).translate[c.title];
+      if (transText != null && transText.isNotEmpty) {
+        c.title = transText;
+      }
+    }
     return new Scaffold(
       appBar: new AppBar(
           actions: <Widget>[

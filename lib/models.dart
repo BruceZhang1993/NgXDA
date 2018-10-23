@@ -48,18 +48,18 @@ class App {
 }
 
 class Choice {
-  const Choice({this.name, this.title, this.icon});
+  Choice({this.name, this.title, this.icon});
 
   final String name;
-  final String title;
+  String title;
   final IconData icon;
 }
 
 class SettingItem {
   final String id;
-  final String title;
+  String title;
   String value;
-  final String default_;
+  String default_;
   final String hint;
 
   SettingItem(this.id, this.title, this.value, this.default_, this.hint);

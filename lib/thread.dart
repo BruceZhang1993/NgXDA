@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' show parse;
+import 'package:ngxda/localization.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:ngxda/models.dart';
 import 'package:html/dom.dart' as dom;
@@ -24,9 +25,9 @@ class ThreadState extends State<ThreadPage> {
   http.Client client;
   var opacity_value = 0.0;
 
-  List<Choice> choices = const <Choice> [
-    const Choice(title: "Open in browser", icon: Icons.open_in_browser, name: 'browser'),
-    const Choice(title: "Share via...", icon: Icons.share, name: 'share')
+  List<Choice> choices = <Choice> [
+    Choice(title: "open_in_browser", icon: Icons.open_in_browser, name: 'browser'),
+    Choice(title: "share_via", icon: Icons.share, name: 'share')
   ];
 
   ThreadState(this.meta);
@@ -123,6 +124,12 @@ class ThreadState extends State<ThreadPage> {
 
   @override
   Widget build(BuildContext context) {
+    for (Choice c in choices) {
+      String transText = AppLocalizations.of(context).translate[c.title];
+      if (transText != null && transText.isNotEmpty) {
+        c.title = transText;
+      }
+    }
     return new Scaffold(
       appBar: new AppBar(
           actions: <Widget>[
