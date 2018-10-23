@@ -24,9 +24,9 @@ addons:
     - libstdc++6
     - fonts-droid
 before_script:
-- wget http://services.gradle.org/distributions/gradle-3.1.2-bin.zip
-- unzip -qq gradle-3.1.2-bin.zip
-- export GRADLE_HOME=$PWD/gradle-3.1.2
+- wget https://services.gradle.org/distributions/gradle-4.4-bin.zip
+- unzip -qq gradle-4.4-bin.zip
+- export GRADLE_HOME=$PWD/gradle-4.4
 - export PATH=$GRADLE_HOME/bin:$PATH
 - git clone https://github.com/flutter/flutter.git -b dev --depth 1
 script:
