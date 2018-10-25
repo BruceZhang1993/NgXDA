@@ -28,7 +28,7 @@ before_script:
 - unzip -qq gradle-4.4-bin.zip
 - export GRADLE_HOME=$PWD/gradle-4.4
 - export PATH=$GRADLE_HOME/bin:$PATH
-- git clone https://github.com/flutter/flutter.git -b dev --depth 1
+- git clone https://github.com/flutter/flutter.git -b master --depth 1
 script:
 - "./flutter/bin/flutter -v build apk"
 cache:
