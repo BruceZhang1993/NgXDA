@@ -27,25 +27,18 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 def keystorePropertiesFile = rootProject.file("key.properties")
 def keystoreProperties = new Properties()
+
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-    signingConfigs {
-        release {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
-        }
-    }
+    def keyAlias = keystoreProperties['keyAlias']
+    def keyPassword = keystoreProperties['keyPassword']
+    def storeFile = file(keystoreProperties['storeFile'])
+    def storePassword = keystoreProperties['storePassword']
 } else {
-    signingConfigs {
-        release {
-            keyAlias System.getenv("keyAlias")
-            keyPassword System.getenv("keyPassword")
-            storeFile file('../../key.jks')
-            storePassword System.getenv("storePassword")
-        }
-    }
+    def keyAlias = System.getenv("keyAlias")
+    def keyPassword = System.getenv("keyPassword")
+    def storeFile = file('../../key.jks')
+    def storePassword = System.getenv("storePassword")
 }
 
 android {
@@ -68,6 +61,15 @@ android {
         versionCode 8
         versionName '0.1.7'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        release {
+            keyAlias keyAlias
+            keyPassword keyPassword
+            storeFile storeFile
+            storePassword storePassword
+        }
     }
 
     buildTypes {
