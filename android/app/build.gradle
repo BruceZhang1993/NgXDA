@@ -30,19 +30,6 @@ def keystoreProperties = new Properties()
 
 def isRunningOnTravis = System.getenv("CI") == "true"
 
-if (isRunningOnTravis) {
-    def keyAlias = System.getenv("keyAlias")
-    def keyPassword = System.getenv("keyPassword")
-    def storeFile = file('../key.jks')
-    def storePassword = System.getenv("storePassword")
-} else {
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-    def keyAlias = keystoreProperties['keyAlias']
-    def keyPassword = keystoreProperties['keyPassword']
-    def storeFile = file(keystoreProperties['storeFile'])
-    def storePassword = keystoreProperties['storePassword']
-}
-
 android {
     compileSdkVersion 27
 
@@ -65,12 +52,24 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
-    signingConfigs {
-        release {
-            keyAlias keyAlias
-            keyPassword keyPassword
-            storeFile storeFile
-            storePassword storePassword
+    if (isRunningOnTravis) {
+        signingConfigs {
+            release {
+                keyAlias System.getenv("keyAlias")
+                keyPassword System.getenv("keyPassword")
+                storeFile file('../../key.jks')
+                storePassword System.getenv("storePassword")
+            }
+        }
+    } else {
+        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+        signingConfigs {
+            release {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+            }
         }
     }
 
