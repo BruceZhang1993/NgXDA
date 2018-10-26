@@ -37,7 +37,7 @@ if (keystorePropertiesFile.exists()) {
 } else {
     def keyAlias = System.getenv("keyAlias")
     def keyPassword = System.getenv("keyPassword")
-    def storeFile = file('../../key.jks')
+    def storeFile = file('key.jks')
     def storePassword = System.getenv("storePassword")
 }
 
