@@ -28,17 +28,19 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 def keystorePropertiesFile = rootProject.file("key.properties")
 def keystoreProperties = new Properties()
 
-if (keystorePropertiesFile.exists()) {
+def isRunningOnTravis = System.getenv("CI") == "true"
+
+if (isRunningOnTravis) {
+    def keyAlias = System.getenv("keyAlias")
+    def keyPassword = System.getenv("keyPassword")
+    def storeFile = file('../key.jks')
+    def storePassword = System.getenv("storePassword")
+} else {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
     def keyAlias = keystoreProperties['keyAlias']
     def keyPassword = keystoreProperties['keyPassword']
     def storeFile = file(keystoreProperties['storeFile'])
     def storePassword = keystoreProperties['storePassword']
-} else {
-    def keyAlias = System.getenv("keyAlias")
-    def keyPassword = System.getenv("keyPassword")
-    def storeFile = file('key.jks').absolutePath
-    def storePassword = System.getenv("storePassword")
 }
 
 android {
