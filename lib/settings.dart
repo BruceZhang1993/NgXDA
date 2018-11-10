@@ -23,9 +23,9 @@ class SettingsState extends State<Settings> {
   void initState() {
     super.initState();
     items = [
-      new SettingItem('device', 'device_name', '', 'auto', 'Set your device name'),
-      new SettingItem('deviceid', 'device_id', '', 'not_set', 'Your device forum ID'),
-      new SettingItem('browser', 'use_browser', '', 'no', 'Yes/No'),
+      new SettingItem('device', 'device_name', '', 'auto', 'Set your device name', null),
+      new SettingItem('deviceid', 'device_id', '', 'not_set', 'Your device forum ID', null),
+      new SettingItem('browser', 'use_browser', '', 'no', 'Yes/No', ['yes', 'no']),
     ];
     SharedPreferences.getInstance().then((pref) {
       this.prefs = pref;
@@ -35,6 +35,22 @@ class SettingsState extends State<Settings> {
         });
       }
     });
+  }
+
+  _buildActionSheet(context, index, current, choices) async {
+    currentInput = '';
+    await showModalBottomSheet(context: context, builder: (_) => new Column(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(choices.length, (i) {
+        return new ListTile(
+          leading: new Icon(Icons.music_note),
+          title: new Text(''),
+          onTap: () => {
+
+          },
+        );
+      })
+    ));
   }
 
   _buildDialog(context, index, current) async {
@@ -125,7 +141,10 @@ class SettingsState extends State<Settings> {
               ),
               child: new ListTile(
                   onTap: () {
-                    _buildDialog(context, index, below.data);
+                    if (items[index].choices == null) {
+                      _buildDialog(context, index, below.data);
+                    }
+
                   },
                   contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 18.0),
                   title: new Column(

@@ -61,8 +61,9 @@ class SettingItem {
   String value;
   String default_;
   final String hint;
+  List<String> choices;
 
-  SettingItem(this.id, this.title, this.value, this.default_, this.hint);
+  SettingItem(this.id, this.title, this.value, this.default_, this.hint, this.choices);
 }
 
 // Threads Models
