@@ -37,16 +37,18 @@ class SettingsState extends State<Settings> {
     });
   }
 
-  _buildActionSheet(context, index, current, choices) async {
+  _buildActionSheet(context, index, current, choices, item1) async {
     currentInput = '';
     await showModalBottomSheet(context: context, builder: (_) => new Column(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(choices.length, (i) {
         return new ListTile(
-          leading: new Icon(Icons.music_note),
-          title: new Text(''),
-          onTap: () => {
-
+          leading: new Icon(Icons.check_circle_outline),
+          title: new Text(AppLocalizations.of(context).translate[choices[i]]),
+          onTap: () {
+            prefs.setString(item1.id, choices[i]);
+            item1.value = choices[i];
+            Navigator.pop(context);
           },
         );
       })
@@ -143,8 +145,9 @@ class SettingsState extends State<Settings> {
                   onTap: () {
                     if (items[index].choices == null) {
                       _buildDialog(context, index, below.data);
+                    } else {
+                      _buildActionSheet(context, index, below.data, items[index].choices, items[index]);
                     }
-
                   },
                   contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 18.0),
                   title: new Column(
