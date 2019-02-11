@@ -8,7 +8,7 @@ android:
   components:
   - tools
   - platform-tools
-  - build-tools-28.0.2
+  - build-tools-28.0.3
   - android-28
   - sys-img-armeabi-v7a-google_apis-28
   - extra-android-m2repository
@@ -24,9 +24,9 @@ addons:
     - libstdc++6
     - fonts-droid
 before_script:
-- wget https://services.gradle.org/distributions/gradle-4.4-bin.zip
-- unzip -qq gradle-4.4-bin.zip
-- export GRADLE_HOME=$PWD/gradle-4.4
+- wget https://services.gradle.org/distributions/gradle-5.2.1-bin.zip
+- unzip -qq gradle-5.2.1-bin.zip
+- export GRADLE_HOME=$PWD/gradle-5.2.1
 - export PATH=$GRADLE_HOME/bin:$PATH
 - git clone https://github.com/flutter/flutter.git -b dev --depth 1
 - export PATH=./flutter/bin:$PATH
