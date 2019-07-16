@@ -77,7 +77,7 @@ class DeviceState extends State<DeviceForums>
               captionElement.text.trim(),
               'https://forum.xda-developers.com' + captionElement.attributes['href']
           );
-          List<ThreadMeta> tmp_threads = [];
+          List<ThreadMeta> tmpThreads = [];
           var elements2 = element.querySelectorAll('.thread-row.thread-row-unread');
           for (var element2 in elements2) {
             ThreadMeta meta2 = new ThreadMeta(
@@ -87,9 +87,9 @@ class DeviceState extends State<DeviceForums>
               element2.querySelector('.count-cell').text.trim(),
               'https://forum.xda-developers.com' + element2.querySelector('.threadTitle').attributes['href'],
             );
-            tmp_threads.add(meta2);
+            tmpThreads.add(meta2);
           }
-          tmp_entries[meta] = tmp_threads;
+          tmp_entries[meta] = tmpThreads;
         }
         setState(() {
           actives = newlist;

@@ -17,32 +17,32 @@ class BestFeeds extends StatefulWidget {
 class BestState extends State<BestFeeds> with AutomaticKeepAliveClientMixin {
   List<Post> posts = [];
   http.Client client;
-  var opacity_value = 0.0;
+  var opacityValue = 0.0;
   SharedPreferences prefs;
 
   void fetchBest() {
     setState(() {
-      this.opacity_value = 1.0;
+      this.opacityValue = 1.0;
     });
     String uri = 'https://www.xda-developers.com';
     print('Fetching $uri');
     client.get(uri).then((response) {
       var document = parse(response.body);
       var posts = document.getElementsByClassName('tb_widget_posts_big')[0].getElementsByClassName('item');
-      var new_posts = [];
+      var newPosts = [];
       for (var post in posts) {
-        Post new_post = new Post(
+        Post newPost = new Post(
             post.getElementsByTagName('h4')[0].text.trim(),
             '',
             '',
             post.getElementsByTagName('h4')[0].getElementsByTagName('a')[0].attributes['href'],
             post.getElementsByClassName('thumb_hover')[0].getElementsByTagName('img')[0].attributes['src']
         );
-        new_posts.add(new_post);
+        newPosts.add(newPost);
       }
       setState(() {
-        this.posts.addAll(Iterable.castFrom(new_posts));
-        this.opacity_value = 0.0;
+        this.posts.addAll(Iterable.castFrom(newPosts));
+        this.opacityValue = 0.0;
       });
     });
   }
@@ -103,7 +103,7 @@ class BestState extends State<BestFeeds> with AutomaticKeepAliveClientMixin {
     return new ListView.builder(
         itemBuilder: (context, index) {
           if (index == posts.length) {
-            return new Opacity(opacity: this.opacity_value, child: new Container(
+            return new Opacity(opacity: this.opacityValue, child: new Container(
                 padding: EdgeInsets.symmetric(vertical: 6.0),
                 child: new Image(
                   image: new AssetImage('asset/static/loading.gif'),
