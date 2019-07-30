@@ -136,6 +136,7 @@ class DeviceState extends State<DeviceForums>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return new ListView(
       shrinkWrap: true,
       children: <Widget>[

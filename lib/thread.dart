@@ -23,7 +23,7 @@ class ThreadState extends State<ThreadPage> {
   final ThreadMeta meta;
   Thread thread;
   http.Client client;
-  var opacity_value = 0.0;
+  var opacityValue = 0.0;
 
   List<Choice> choices = <Choice> [
     Choice(title: "open_in_browser", icon: Icons.open_in_browser, name: 'browser'),
@@ -47,7 +47,7 @@ class ThreadState extends State<ThreadPage> {
 
   void _fetchDetail(uri) {
     setState(() {
-      this.opacity_value = 1.0;
+      this.opacityValue = 1.0;
     });
     client.get(uri).then((response) {
       // TODO: Finish Thread Content Parsing
@@ -58,7 +58,7 @@ class ThreadState extends State<ThreadPage> {
           .attributes['src'];
       var content = document.getElementsByClassName('entry_content')[0];
       setState(() {
-        this.opacity_value = 0.0;
+        this.opacityValue = 0.0;
       });
     });
   }
@@ -71,7 +71,7 @@ class ThreadState extends State<ThreadPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           // TODO: Content Cards Here
-          new Opacity(opacity: this.opacity_value, child: new Container(
+          new Opacity(opacity: this.opacityValue, child: new Container(
               padding: EdgeInsets.symmetric(vertical: 6.0),
               child: new Image(
                 image: new AssetImage('asset/static/loading.gif'),

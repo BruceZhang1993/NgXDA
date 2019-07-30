@@ -6,7 +6,6 @@ import 'package:ngxda/localization.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:ngxda/models.dart';
 import 'package:html/dom.dart' as dom;
-import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:share/share.dart';
 import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
 import 'package:url_launcher/url_launcher.dart' as u;
@@ -24,7 +23,7 @@ class PostState extends State<PostPage> {
   final Post post;
   http.Client client;
   PostDetail detail;
-  var opacity_value = 0.0;
+  var opacityValue = 0.0;
   List<Choice> choices = <Choice> [
     Choice(title: "open_in_browser", icon: Icons.open_in_browser, name: 'browser'),
     Choice(title: "share_via", icon: Icons.share, name: 'share')
@@ -49,19 +48,19 @@ class PostState extends State<PostPage> {
 
   void _fetchDetail(uri) {
     setState(() {
-      this.opacity_value = 1.0;
+      this.opacityValue = 1.0;
     });
     client.get(uri).then((response) {
       var document = parse(response.body);
-      var large_img = document
+      var largeImg = document
           .getElementsByClassName('entry_media')[0]
           .getElementsByTagName('img')[0]
           .attributes['src'];
       var content = document.getElementsByClassName('entry_content')[0];
       setState(() {
-        this.detail.image = large_img;
+        this.detail.image = largeImg;
         this.detail.content = content;
-        this.opacity_value = 0.0;
+        this.opacityValue = 0.0;
       });
     });
   }
@@ -254,6 +253,7 @@ class PostState extends State<PostPage> {
               url: url
             );
             textSpans.add(span);
+            return '';
           },
           onNonMatch: (nonmatch) {
             TextSpan span = new TextSpan(
@@ -261,6 +261,7 @@ class PostState extends State<PostPage> {
                   .replaceAll('&nbsp;', '').replaceAll('&amp;', '&')
             );
             textSpans.add(span);
+            return '';
           }
         );
       }
@@ -317,7 +318,7 @@ class PostState extends State<PostPage> {
           ),
           new Separator(),
           _buildHtmlContent(detail.content),
-          new Opacity(opacity: this.opacity_value, child: new Container(
+          new Opacity(opacity: this.opacityValue, child: new Container(
               padding: EdgeInsets.symmetric(vertical: 6.0),
               child: new Image(
                 image: new AssetImage('asset/static/loading.gif'),

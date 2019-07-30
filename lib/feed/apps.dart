@@ -14,31 +14,31 @@ class Apps extends StatefulWidget {
 class AppsState extends State<Apps> with AutomaticKeepAliveClientMixin {
   List<App> apps = [];
   http.Client client;
-  var opacity_value = 0.0;
+  var opacityValue = 0.0;
 
   void fetchApps() {
     setState(() {
-      this.opacity_value = 1.0;
+      this.opacityValue = 1.0;
     });
     String uri = 'https://www.xda-developers.com';
     print('Fetching $uri');
     client.get(uri).then((response) {
       var document = parse(response.body);
       var ss = document.getElementsByClassName('widget_apps')[0].getElementsByClassName('widget_app');
-      var new_posts = [];
+      var newPosts = [];
       for (var aa in ss) {
-        App new_post = new App(
+        App newPost = new App(
           aa.getElementsByClassName('widget_item_content')[0].getElementsByTagName('h4')[0].text.trim(),
             aa.getElementsByClassName('widget_item_content')[0].getElementsByTagName('a')[0].attributes['href'],
             aa.getElementsByClassName('thumb_hover')[0].getElementsByTagName('img')[0].attributes['src'],
             aa.attributes['data-app-id'],
             aa.getElementsByClassName('widget_item_text')[0].text.trim()
         );
-        new_posts.add(new_post);
+        newPosts.add(newPost);
       }
       setState(() {
-        this.apps.addAll(Iterable.castFrom(new_posts));
-        this.opacity_value = 0.0;
+        this.apps.addAll(Iterable.castFrom(newPosts));
+        this.opacityValue = 0.0;
       });
     });
   }
@@ -84,7 +84,7 @@ class AppsState extends State<Apps> with AutomaticKeepAliveClientMixin {
     return new ListView.builder(
         itemBuilder: (context, index) {
           if (index == apps.length) {
-            return new Opacity(opacity: this.opacity_value, child: new Container(
+            return new Opacity(opacity: this.opacityValue, child: new Container(
                 padding: EdgeInsets.symmetric(vertical: 6.0),
                 child: new Image(
                   image: new AssetImage('asset/static/loading.gif'),

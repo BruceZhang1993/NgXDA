@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +23,7 @@ class DeviceState extends State<DeviceFeeds> with AutomaticKeepAliveClientMixin 
   http.Client client;
   ScrollController scroll;
   bool reachedBottom = false;
-  var opacity_value = 0.0;
+  var opacityValue = 0.0;
   DeviceInfoPlugin deviceInfo;
   AndroidDeviceInfo androidInfo;
   SharedPreferences prefs;
@@ -54,7 +56,7 @@ class DeviceState extends State<DeviceFeeds> with AutomaticKeepAliveClientMixin 
       }
     });
     setState(() {
-      this.opacity_value = 1.0;
+      this.opacityValue = 1.0;
     });
     String uri = 'https://www.xda-developers.com/search/'+deviceName+'/page/$currentPage/';
     if (currentPage == 1) {
@@ -65,22 +67,29 @@ class DeviceState extends State<DeviceFeeds> with AutomaticKeepAliveClientMixin 
     client.get(uri).then((response) {
       var document = parse(response.body);
       var posts = document.getElementsByClassName('layout_post_1');
-      var new_posts = [];
+      var newPosts = [];
       for (var post in posts) {
-        Post new_post = new Post(
+        Post newPost = new Post(
             post.getElementsByTagName('h4')[0].text.trim(),
             post.getElementsByClassName('meta_date')[0].text.trim(),
             post.getElementsByClassName('meta_author')[0].text.trim(),
             post.getElementsByTagName('h4')[0].getElementsByTagName('a')[0].attributes['href'],
             post.getElementsByClassName('thumb_hover')[0].getElementsByTagName('img')[0].attributes['src']
         );
-        new_posts.add(new_post);
+        newPosts.add(newPost);
       }
       setState(() {
-        this.opacity_value = 0.0;
-        this.posts.addAll(Iterable.castFrom(new_posts));
+        this.opacityValue = 0.0;
+        this.posts.addAll(Iterable.castFrom(newPosts));
       });
     });
+  }
+
+  Future<void> _refresh() async {
+    currentPage = 1;
+    posts.clear();
+    await fetchPage();
+    return;
   }
 
   @override
@@ -137,11 +146,12 @@ class DeviceState extends State<DeviceFeeds> with AutomaticKeepAliveClientMixin 
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return RefreshIndicator(
+      child: ListView.builder(
         controller: this.scroll,
         itemBuilder: (context, index) {
           if (index == posts.length) {
-            return new Opacity(opacity: this.opacity_value, child: new Container(
+            return new Opacity(opacity: this.opacityValue, child: new Container(
                 padding: EdgeInsets.symmetric(vertical: 6.0),
                 child: new Image(
                   image: new AssetImage('asset/static/loading.gif'),
@@ -196,7 +206,9 @@ class DeviceState extends State<DeviceFeeds> with AutomaticKeepAliveClientMixin 
             ),
           );
         },
-        itemCount: posts.length+1);
+        itemCount: posts.length+1),
+        onRefresh: _refresh
+    );
   }
 
   @override

@@ -34,6 +34,8 @@ class AppLocalizations {
       'not_set': 'Not set',
       'yes': 'Yes',
       'no': 'No',
+      'cancel': 'Cancel',
+      'set': 'Set',
     },
     'zh': {
       'settings': '设置',
@@ -51,12 +53,14 @@ class AppLocalizations {
       'device_name': '设备名称',
       'device_id': '设备标识/论坛',
       'open_in_browser': '在浏览器中打开',
-      'share_via': '分享...',
+      'share_via': '分享到...',
       'use_browser': '使用浏览器',
       'auto': '自动',
       'not_set': '未设置',
       'yes': '是',
       'no': '否',
+      'cancel': '取消',
+      'set': '设置',
     },
   };
 

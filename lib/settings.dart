@@ -75,7 +75,7 @@ class SettingsState extends State<Settings> {
           new FlatButton(onPressed: () {
             Navigator.pop(context);
             currentInput = '';
-          }, child: new Text('CANCEL')),
+          }, child: new Text(AppLocalizations.of(context).translate['cancel'])),
           new FlatButton(onPressed: () {
             Navigator.pop(context);
             prefs.setString(items[index].id, currentInput.trim());
@@ -91,7 +91,7 @@ class SettingsState extends State<Settings> {
               });
             }
             currentInput = '';
-          }, child: new Text('SET'))
+          }, child: new Text(AppLocalizations.of(context).translate['set']))
         ],
       )
     );
@@ -167,7 +167,6 @@ class SettingsState extends State<Settings> {
               ),
             );
           },
-
         )
     );
   }
